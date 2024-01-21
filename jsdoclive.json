@@ -1,11 +1,5 @@
 {
- "_exec_cmd" : "jsdoc ./ README.md",
- "_exec_cmd" : "documentation build -o out -f html ./AbstractStock.js",
- "_exec_cmd" : "documentation",
- "_first_args" : "build",
- "_first_args" : "build -o out -f html ",
- "_last_args" : "-o out -f html ./AbstractStock.js",
- "last_args" : " README.md -c ./conf.json",
- "_output_res" : "out",
- "_delete_to_end": true
+
+ "last_args" : " README.md -c ./conf.json"
+ 
 }
