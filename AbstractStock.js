@@ -1,11 +1,11 @@
 /**
  * @function AbstractStock.prototype.validStock
- * @description проводит валидаию абстрактного накопителя. 
+ * @description проводит валидацию абстрактного накопителя. 
  * Возврощает объект. Свойство status==true 
  * озночает - что все привязки абстрактных свойств 
  * в абстрактном накопите коректны 
  * по отношению привязанного реального объекта
- * @param {AbstractStock#stockT} [pstock=AbstractStock#getStock()] - внешний объект для валидации с абстрактным накопителем. 
+ * @param {AbstractStock#stockT} [pstock={@link AbstractStock#getStock}()] <readonly>  - внешний объект для валидации с абстрактным накопителем. 
  * По умолчанию используется привязанный объект. Смотри {@link AbstractStock#initStock}. 
  * @throws Если параметр не передан, и функция вызвана до привязки объекта - будет сгенирирована ошибка.
  * @returns {AbstractStock#validStockT}
@@ -29,7 +29,7 @@ AbstractStock.prototype.validStock = function(pstock = this.getStock()){
    ret.status = true;// общий статутс валидации
    ret.abstractProps = {}; //Абстрактные свойства
 
-   let listStock = this.getASlist(); //картаабстрактных свойств(связь абстрактного свойства со свойством внешнего объекта)
+   let listStock = this.getASlist(); //карта абстрактных свойств(связь абстрактного свойства со свойством внешнего объекта)
 
    for(let asprop in listStock){ // перебираем абстрактные свойства
     let props = ret.abstractProps; //ссылка на список валидируемых абстрактных свойств
@@ -51,11 +51,12 @@ AbstractStock.prototype.validStock = function(pstock = this.getStock()){
 };
 /**
  * @class AbstractStock
- *  Класс является фабрикой абстрактного класса с виртуальными методами. Это реализовано путём 
+ *  Класс является фабрикой абстрактного класса который позволяет создовать  виртуальные методы и свойства. Это реализовано путём 
  * создания абстрактного накопителя(который нужно связать с реальным объектом) 
  * и абстрактных свойств (которые связываются реальными свойствам привязонного реального объекта)
  * Конструктор возвращает объекта типа AbstractStock. Для далнейше работы потребно вызвать 
- * метотод {@link AbstractStock#initStock}*/
+ * метотод {@link AbstractStock#initStock}
+ * для пояснения терминов и понятий смотри {@link ./README.md}*/
 function AbstractStock(){
 
 
@@ -93,25 +94,27 @@ function AbstractStock(){
 * @instance
 * @memberof AbstractStock
 * @kind function
+* @returns {AbstractStock#ASMapT}
 */
     Object.defineProperty(this, 'getASlist', {value: ()=>{
                                                 /*let ret = {};
                                                 for (let _prop in ASlist){
                                                     ret[_prop] = ASlist[_prop].name;
                                                 }
-                                            return ret*/ return Object.assign(ASlist)},
+                                            return ret*/ return Object.assign({}, ASlist)},
                                                 writable: false,
                                             }
     );
 
 
     /**
-     * Инициализирует накопитель. Задаёт взаимосвязь между вертуальным и реальным объектом.
+     * Инициализирует накопитель. Задаёт взаимосвязь между вертуальным и внешним объектом.
      *  Привязанный объект стновится доступным как свойство экзампляра AbstractStock, 
      * имя которого задаётся параметром pname.
-     * К одному экземпляру AbstractStock может быть привязан только один реальный объект. 
-     * Повторный вызов метода затрёт существующию ссылку и сделает реальным
-     * TODO - изменение привязки реального объекта
+     * К одному экземпляру AbstractStock может быть привязан только один внешний объект. 
+     * Повторный вызов метода изменит ссылку накопителя всех переменных созданных ранее. 
+     * Другими словами - повторный вызов создаст несколько переменных на один и тот же объект.
+     * 
      * 
      * {@link initStock~pname}
      * @param {String} pname - имя накопителя
@@ -168,7 +171,8 @@ function AbstractStock(){
      * @prop {String} real_prop - имя реального свойства
      * @description служебный тип данных потребный для хранения информации об обстрактных свойствах.
      * Абстрактное свойство определяется {@link AbstractStock#abstractProp}
-     * Параметры типа являются информационными, и не имют отображения в коде.  
+     * Параметры типа являются информационными, и не имют отображения в коде. Не имеют связи с данными и 
+     * нужны только для напоминания того - что нужно задокументировать в коментарии jsdoc.  
      */
 
     /**
@@ -177,7 +181,8 @@ function AbstractStock(){
      * @prop {Object} real_Stock - ссылка на реальнsq объект
      * @description служебный тип данных потребный для хранения информации об обстрактном накопителе. 
      * Детали и создание обстрактного накопителя смотри в описание метода  {@link AbstractStock#initStock}
-     * Параметры типа являются информационными, и не имют отображения в коде.     
+     * Параметры типа являются информационными, и не имют отображения в коде. Не имеют связи с данными и 
+     * нужны только для напоминания того - что нужно задокументировать в коментарии jsdoc.     
      */
 
     /**
@@ -195,6 +200,7 @@ function AbstractStock(){
      * Сам список имеет следующий вид <br>
      * <pre><code>
      *  {
+     *      ....
      *      <b>abstractProp</b>: <b>stockProp</b>,
      *      ....
      *  }
@@ -210,7 +216,7 @@ function AbstractStock(){
     /**
      * @typedef AbstractStock.prototype.validStockT
      * @description Тип данных предстовляющих результат валидации абстрактного накопителя
-     * @prop {boolean} status - общий статус валидации всех привязок абстрактных свойств. 
+     * @prop {boolean} status=общий статус валидации всех привязок абстрактных свойств. 
      * Значение false указывает на то что в одном или более абстрактном свойстве привязка не коректна.
      * @prop {Object} abstractProps - объект валидации абстрактных свойств
      * @prop {Object} abstractProps.abstractProp - валидация абстрактного свойства. Именем свойства являются имена абстрактных свойств. см {@link AbstractStock#abstractProp}
@@ -258,10 +264,10 @@ function AbstractStock(){
 
                 if ((stocknamest in AS_stock)==false){
         /*Определяется новое абстрактное свойство, 
-        но во внешнем объекте свойство не найдено */
+        но в накопителе свойство не найдено */
                     console.warn(
                         `AbstractStock WARN:
-                         При определение абстрактного свойства, Свойство в накопителе не найдено
+                         При определение абстрактного свойства, свойство в накопителе не найдено
                             ${abstractname}{
                                 stockname: ${stocknamest},
                                 status: ${stocknamest in AS_stock} }
@@ -304,97 +310,119 @@ function AbstractStock(){
 
 //----end AbstractStock---
 }
-/**базовый объект типа массив 
- * @type {Array}
-*/
 
-let arr = [2];
+///**базовый объект типа массив 
+// * @type {Array}
+//*/
+//
+//let arr = [2];
+//
+///**
+// * @class
+// * @extends {AbstractStock}
+// * 
+// */
+//let as = new AbstractStock();
+///**
+// * Абстрактное накопитель. Ссылка на {@link arr}
+// * @name ars
+// * @instance as
+// * @memberof as
+// * 
+// * @type {as#abstractStockT}
+// * @prop {Array} real_Stock - {@link arr}
+// * 
+//  * @borrows as.arr as arr
+//
+// * 
+// *  TODO - тип для определённого абстрактного накопителя сделать
+// */
+//
+//
+//as.initStock('ars', arr);
+//
+///**
+// * Абстрактное свойство
+// * @name in
+// * @instance as
+// * @memberof as
+// * 
+// * @type {as#abstractPropT}
+// * @prop {Function} real_prop - push
+// * 
+//  * @borrows as.arr as arr
+//
+// * 
+// *  TODO - тип для определённого абстрактного накопителя сделать
+// */
+//as.abstractProp('in', 'push');
+//
+///**
+// * Абстрактное свойство
+// * @name out
+// * @instance as
+// * @memberof as
+// * 
+// * @type {as#abstractPropT}
+// * @prop {Function} real_prop - shift
+// * 
+//  * @borrows as.arr as arr
+//
+// * 
+// *  TODO - тип для определённого абстрактного накопителя сделать
+// */
+//as.abstractProp('out', 'shift');
+////as.in(2); 
+//
+///**
+// * @prop {AbstractStock.abstractProp} as.in - fff
+// * 
+// */
+//as.in(7);
+//as.in(9);
+//console.dir(as.getASlist());
+//
+//as.abstractProp('out', 'pop');
+//as.abstractProp('out', 'pop1');
+//
+//as.abstractProp('_out', '_pop1');
+//let arr1 =[55,78,79];
+//
+//arr.pop1= function(...args){return this.pop(...args)};
+//arr._pop1= function(...args){return this.pop(...args)};
+//arr1.pop1= function(...args){return this.pop(...args)};
+//arr1._pop1= function(...args){return this.pop(...args)};
+//console.log(as.out());
+//console.log(as._out());
+//
+//as.ars = arr1;
+//
+//console.log(as.out());
+//console.log(as._out());
+//
+///**переменная типа абстрактного свойства
+// * @type {as#abstractPropT} 
+// * @prop {as#abstractPropT} res - имя переменной
+//*/
+//var zzzzz;
+//
 
-/**
- * @class
- * @extends {AbstractStock}
- * 
- */
-let as = new AbstractStock();
-/**
- * Абстрактное накопитель. Ссылка на {@link arr}
- * @name ars
- * @instance as
- * @memberof as
- * 
- * @type {as#abstractStockT}
- * @prop {Array} real_Stock - {@link arr}
- * 
-  * @borrows as.arr as arr
+let obj1 = {};
+obj1.name = "Boris";
+obj1.say = function(){console.log(`hello ${this.name}`)};
 
- * 
- *  TODO - тип для определённого абстрактного накопителя сделать
- */
+let obj2 = new AbstractStock();
+obj2.initStock("obj1", obj1);
 
+obj2.abstractProp("_name_", "name");
+obj2.abstractProp("say", "say");
 
-as.initStock('ars', arr);
+console.log(obj2._name_); // выведет Boris
+obj1.name = 'Ivan';
+obj1.say();// выведет Ivan
+obj2.say();// выведет Ivan
 
-/**
- * Абстрактное свойство
- * @name in
- * @instance as
- * @memberof as
- * 
- * @type {as#abstractPropT}
- * @prop {Function} real_prop - push
- * 
-  * @borrows as.arr as arr
+obj2._name_ = 'Peter';
+obj1.say();// выведет Peter
+obj2.say();// выведет Peter
 
- * 
- *  TODO - тип для определённого абстрактного накопителя сделать
- */
-as.abstractProp('in', 'push');
-
-/**
- * Абстрактное свойство
- * @name out
- * @instance as
- * @memberof as
- * 
- * @type {as#abstractPropT}
- * @prop {Function} real_prop - shift
- * 
-  * @borrows as.arr as arr
-
- * 
- *  TODO - тип для определённого абстрактного накопителя сделать
- */
-as.abstractProp('out', 'shift');
-//as.in(2); 
-
-/**
- * @prop {AbstractStock.abstractProp} as.in - fff
- * 
- */
-as.in(7);
-as.in(9);
-console.dir(as.getASlist());
-
-as.abstractProp('out', 'pop');
-as.abstractProp('out', 'pop1');
-
-as.abstractProp('_out', '_pop1');
-let arr1 =[55,78,79];
-
-arr.pop1= function(...args){return this.pop(...args)};
-arr._pop1= function(...args){return this.pop(...args)};
-arr1.pop1= function(...args){return this.pop(...args)};
-arr1._pop1= function(...args){return this.pop(...args)};
-console.log(as.out());
-console.log(as._out());
-
-as.ars = arr1;
-
-console.log(as.out());
-console.log(as._out());
-
-/**переменная типа абстрактного свойства
- * @type {as#abstractPropT} 
- * @prop {as#abstractPropT} res - имя переменной
-*/
-var zzzzz;
