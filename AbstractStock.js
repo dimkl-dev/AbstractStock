@@ -119,38 +119,102 @@ function AbstractStock(){
      * {@link initStock~pname}
      * @param {String} pname - имя накопителя
      * @param {Object} pstock -  накопитель
+     * @param {AbstractStock#verrifFunc} [verrifF] - функция обратного вызова для
+     * проврки и изменения значения
      * @example let _as = new AbstractStock();
      * let arr = new Array(5,7);
      * _as.initStock('ars', arr);
      * console.log(_as.ars);
      */
 
-    this.initStock = (pname, pstock) =>{
+    this.initStock = (pname, pstock, verrifF) =>{
 
         AS_stock = pstock;
 
+//---блок обнаружения веррификации        
+        var callstack = ((new Error()).stack+"").replace("Error", "CALLSTACK:");
+        var cb = verrifF instanceof Function;
+        var ud =  typeof verrifF == 'undefined'; // если функция феррификации не определена
 
-/**
- *  @inner
- *  @memberof INI
- * kkk
- */
+        var _this = this;
+        if (!cb){
+            if (ud) {
+                //если функция феррификации не определена
+                console.info(`AbstractStock#initStock - 
+                функция феррификации не определена;
+                pname = ${pname},
+                pstock = ${pstock},
+                this = ${_this},
+                ${callstack}
+                `);
+
+            } else {
+                //если функция феррификации не является функцией  
+                throw new TypeError(`AbstractStock#initStock - 
+                в параметре verrifF передана не функция;
+                pname = ${pname},
+                pstock = ${pstock},
+                verrifF = ${verrifF},
+                this = ${_this}
+                `)
+                
+            }
+        }
+//---конец блока обнаружения веррификации        
+
+
         var _desc = {};
         _desc.val = "";
-        _desc.get = ()=>{return AS_stock}; 
+        _desc.configurable=true;
+        _desc.get = ()=>{
+            var ret = AS_stock;
+            if (cb){//если функция веррификации передана
+          //дескрипто свойства
+            let desc = {
+                name: pname,
+                val: ret,
+                context: _this,
+                stock: true,
+                prop: false,
+                get: true,
+                set: false
+                };
+                ret = verrifF(desc)};
+                
+
+            return ret;
+//-----end get--------        
+        }; 
         _desc.set = (pval) => {
             // TODO сделать валидацию pstock
-            let stockValidRes = this.validStock(pval);
+            let stock = pval;
+
+            if (cb){//если функция веррификации передана
+                //дескрипто свойства
+                  let desc = {
+                      name: pname,
+                      val: stock,
+                      context: _this,
+                      stock: true,
+                      prop: false,
+                      get: false,
+                      set: true
+                      };
+                      stock = verrifF(desc)};
+      
+
+            let stockValidRes = this.validStock(stock);
 
             if(stockValidRes.status){
-                AS_stock = pval;}else{
+                AS_stock = stock;}else{
                     
                     let sterr = `AbstractStock: ERROR!!!
                     Error to redefine 'Stock'`;
 
                     let err = new Error(sterr);
                     err.oldStock = AS_stock;
-                    err.newStock = pval;
+                    err.passStock = pval;
+                    err.newStock = stock;
                     err.stockValidRes = stockValidRes;
                     throw err;
 
@@ -216,6 +280,7 @@ function AbstractStock(){
     /**
      * @typedef AbstractStock.prototype.validStockT
      * @description Тип данных предстовляющих результат валидации абстрактного накопителя
+     * 
      * @prop {boolean} status=общий статус валидации всех привязок абстрактных свойств. 
      * Значение false указывает на то что в одном или более абстрактном свойстве привязка не коректна.
      * @prop {Object} abstractProps - объект валидации абстрактных свойств
@@ -227,15 +292,72 @@ function AbstractStock(){
 
 //--Завершение определения типов данных---
 
+//--Определение callback функций
+
+/**
+ * функции проверяющие и модифицируещие значение абстрактных свойств или объекта привязанного
+ *  к абстрактному накопителю. Функции данного типа должны возврощать результат.
+ * @callback AbstractStock#verrifFunc
+ * @param {Object} desc - дескриптор значения свойства
+ * @param {String} desc.name - имя свойства
+ * @param {any} desc.val - значение свойства
+ * @param {Object} context - контекст свойства
+ * @param {true|false} desc.stock - **true**  если свойство является накопителем. **false** - во всех 
+ * остальных случаях
+ * @param {true|false} desc.prop - **true** если свойста является абстрактным. **false** - во всех 
+ * остальных случаях
+ * @param {true|false} desc.get - **true** если значение возврощается свойством. **false** - во всех 
+ * остальных случаях
+ * @param {true|false} desc.set - **true** если значение записывается свойством. **false** - во всех 
+ * остальных случаях
+  * @returns {any} значене после всех операций
+ */
+
+//--Конец определения callback функций
+
 /**
  * Определяет абстрактное свойство. 
  * @param {String} abstractname - имя абстрактного свойтсва
  * @param {String} stockname - имя фактического свойства
+ * @param {AbstractStock#verrifFunc} [verrifF] - функция обратного вызова для
+ * проврки и изменения значения
  */
-    this.abstractProp = (abstractname, stockname) =>{
+    this.abstractProp = (abstractname, stockname, verrifF) =>{
         /**@type {String} */
         let abstractnamest = abstractname+"";
         let stocknamest = stockname+"";
+
+//---блок обнаружения веррификации
+        var callstack = ((new Error()).stack+"").replace("Error", "CALLSTACK:");
+        var cb = verrifF instanceof Function;
+        var ud =  typeof verrifF == 'undefined'; // если функция феррификации не определена
+
+        var _this = this;//контекст
+
+        if (!cb){
+            if (ud) {
+                //если функция феррификации не определена
+                console.info(`AbstractStock#abstractProp - 
+                функция феррификации не определена;
+                abstractname = ${abstractname},
+                stockname = ${stockname},
+                this = ${_this},
+                ${callstack}
+                `);
+
+            } else {
+                //если функция феррификации не является функцией  
+                throw new TypeError(`AbstractStock#abstractProp - 
+                в параметре verrifF передана не функция;
+                abstractname = ${abstractname},
+                stockname = ${stockname},
+                verrifF = ${verrifF},
+                this = ${_this}
+                `)
+                
+            }
+        }   
+//---конец блока обнаружения веррификации             
         
 //----block console.warn-----
         //Ищем в карте абстрактное свойство
@@ -252,7 +374,7 @@ function AbstractStock(){
                         ${((new Error()).stack+"").replace("Error", "CALLSTACK:")}
                     `
                 );
-                // TODO сделать валидацию pstock
+                // TODO сделать валидацию pstock - сделано
 
                 /*
                 abstractProp{oldVal,
@@ -281,19 +403,53 @@ function AbstractStock(){
 
 //Так как аксесоры постоянно доступны - то они порождают замыкани.    
             var _desc = {}; //дескриптор динамичски-определяемого свойства.
+            _desc.configurable=true
+            _desc.enumerable=true
             _desc.retf = (...args)=>{return AS_stock[ASlist[_desc.val]](...args) };/*новодел. Эмулирует вызов метода реального объекта. 
             Обёртка для вызыва функций в контесте реального объекта */
             _desc.val = abstractnamest; //
             _desc.get = () => {  //Аксессор get
                 _propstock = AS_stock[ASlist[_desc.val]];
                 /* */
-                let _ret = _propstock instanceof Function ? _desc.retf : _propstock;
-                return _ret;
+                let _ret = _propstoc instanceof Function ? _desc.retf : _propstock;
+
+//----------------веррификация--------------
+            if (cb){//если функция веррификации передана
+                //дескрипто свойства
+                  let desc = {
+                      name: abstractnamest,
+                      val: _ret,
+                      context: _this,
+                      stock: false,
+                      prop: true,
+                      get: true,
+                      set: false
+                      };
+                      _ret = verrifF(desc)};
+//------------конец веррификации------------
+
+                return _ret;//конец get
              };
             _desc.set = (pval) => {//Аксессор set
-                            
-                AS_stock[ASlist[_desc.val]] = pval;
-            };
+                let retval = pval;
+
+//----------------веррификация--------------
+            if (cb){//если функция веррификации передана
+                //дескрипто свойства
+                  let desc = {
+                      name: abstractnamest,
+                      val: pval,
+                      context: _this,
+                      stock: false,
+                      prop: true,
+                      get: false,
+                      set: true
+                      };
+                      retval = verrifF(desc)};
+//------------конец веррификации------------                
+
+                AS_stock[ASlist[_desc.val]] = retval;
+            };//конец set
             /*Устанавливаем соответсвие между абстрактным и фактическим свойстве
             /* путём записи свойства ASlist*/
             
@@ -310,6 +466,15 @@ function AbstractStock(){
 
 //----end AbstractStock---
 }
+
+module.exports.AbstractStock = AbstractStock;
+
+//export to window
+try {Object.assign(window, module.exports)}catch(e){ 
+console.groupCollapsed('%cW', 'color: red');
+console.error(e);
+console.groupEnd();}
+//end export to window   
 
 ///**базовый объект типа массив 
 // * @type {Array}
@@ -407,22 +572,22 @@ function AbstractStock(){
 //var zzzzz;
 //
 
-let obj1 = {};
-obj1.name = "Boris";
-obj1.say = function(){console.log(`hello ${this.name}`)};
-
-let obj2 = new AbstractStock();
-obj2.initStock("obj1", obj1);
-
-obj2.abstractProp("_name_", "name");
-obj2.abstractProp("say", "say");
-
-console.log(obj2._name_); // выведет Boris
-obj1.name = 'Ivan';
-obj1.say();// выведет Ivan
-obj2.say();// выведет Ivan
-
-obj2._name_ = 'Peter';
-obj1.say();// выведет Peter
-obj2.say();// выведет Peter
+//let obj1 = {};
+//obj1.name = "Boris";
+//obj1.say = function(){console.log(`hello ${this.name}`)};
+//
+//let obj2 = new AbstractStock();
+//obj2.initStock("obj1", obj1);
+//
+//obj2.abstractProp("_name_", "name");
+//obj2.abstractProp("say", "say");
+//
+//console.log(obj2._name_); // выведет Boris
+//obj1.name = 'Ivan';
+//obj1.say();// выведет Ivan
+//obj2.say();// выведет Ivan
+//
+//obj2._name_ = 'Peter';
+//obj1.say();// выведет Peter
+//obj2.say();// выведет Peter
 

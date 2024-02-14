@@ -8,10 +8,5 @@
 
     "tags": {
         "allowUnknownTags": true
-    },
-
-
-
- "last_args" : " README.md -c ./jsdoclive.json"
- 
+    }
 }
