@@ -120,6 +120,7 @@ function AbstractStock(){
      * @param {String} pname - имя накопителя
      * @param {Object} pstock -  накопитель
      * @param {AbstractStock#verrifFunc} [verrifF] - функция обратного вызова для
+     * @param {Boolean} [debug] - **true** - будут вывводится отладочные сообщения
      * проврки и изменения значения
      * @example let _as = new AbstractStock();
      * let arr = new Array(5,7);
@@ -127,39 +128,59 @@ function AbstractStock(){
      * console.log(_as.ars);
      */
 
-    this.initStock = (pname, pstock, verrifF) =>{
+    this.initStock = (pname, pstock, verrifF, debug) =>{
 
         AS_stock = pstock;
 
 //---блок обнаружения веррификации        
-        var callstack = ((new Error()).stack+"").replace("Error", "CALLSTACK:");
+        //var callstack = ((new Error()).stack+"").replace("Error", "CALLSTACK:");
         var cb = verrifF instanceof Function;
-        var ud =  typeof verrifF == 'undefined'; // если функция феррификации не определена
-
+        //var ud =  typeof verrifF == 'undefined'; // если функция феррификации не определена
+        //var ud = verrifF ? false : true;
+        var ud = !verrifF//true - если не определена, false - если определена        
         var _this = this;
+        //var debug = ((debug === undefined)||(debug === false)) ? false : true;
+
         if (!cb){
             if (ud) {
                 //если функция феррификации не определена
-                console.info(`AbstractStock#initStock - 
+                /*console.info(`${this.__proto__.constructor.name}#initStock - 
                 функция феррификации не определена;
                 pname = ${pname},
                 pstock = ${pstock},
-                this = ${_this},
-                ${callstack}
-                `);
+                this = ${JSON.stringify(_this).replaceAll(',', ',\n\t\t')},
+                ${((new Error()).stack+"").replace("Error", "CALLSTACK:")}
+                `);*/
+//-----Ooops-------
+                if (debug){
+                console.info('\n---start debug massage---'); 
+                    console.info(this.__proto__.constructor.name + '#initStock - \
+                    \n\tфункция феррификации не определена');
+                    console.info('\tpname = ', pname);
+                    console.info('\tpstock = ', pstock);
+                    console.info('\tthis = ',  _this);
+                    console.trace();
+                console.info('---end debug massage---\n');
+                }
+
 
             } else {
+              if(debug){
+               console.error('\n--debug information--')
                 //если функция феррификации не является функцией  
-                throw new TypeError(`AbstractStock#initStock - 
-                в параметре verrifF передана не функция;
-                pname = ${pname},
-                pstock = ${pstock},
-                verrifF = ${verrifF},
-                this = ${_this}
-                `)
+                console.error(this.__proto__.constructor.name +'#initStock - \
+                \n\tв параметре verrifF передана не функция');
+                console.error('\tpname = ', pname, '\t---debug--');
+                console.error('\tpstock = ', pstock, '\t---debug--');
+                console.error('\tverrifF = ', verrifF, '\t---debug--');
+                console.error('\tthis = ', _this, '\t---debug--');
+              }
+                throw (new TypeError('\tverrifF is not function'))
+
+     //----end else-----                
                 
-            }
-        }
+            }//end ud
+        }//end cb
 //---конец блока обнаружения веррификации        
 
 
@@ -224,7 +245,9 @@ function AbstractStock(){
 
         };
 
-        Object.defineProperty(this, pname, _desc);
+        Object.defineProperty(this, pname, _desc); 
+
+//----------Конец определение накопителя---------
 
     };
 
@@ -301,7 +324,7 @@ function AbstractStock(){
  * @param {Object} desc - дескриптор значения свойства
  * @param {String} desc.name - имя свойства
  * @param {any} desc.val - значение свойства
- * @param {Object} context - контекст свойства
+ * @param {Object} desc.context - контекст свойства
  * @param {true|false} desc.stock - **true**  если свойство является накопителем. **false** - во всех 
  * остальных случаях
  * @param {true|false} desc.prop - **true** если свойста является абстрактным. **false** - во всех 
@@ -320,40 +343,49 @@ function AbstractStock(){
  * @param {String} abstractname - имя абстрактного свойтсва
  * @param {String} stockname - имя фактического свойства
  * @param {AbstractStock#verrifFunc} [verrifF] - функция обратного вызова для
+ * @param {Boolean} [debug] - **true** - будут вывводится отладочные сообщения
  * проврки и изменения значения
  */
-    this.abstractProp = (abstractname, stockname, verrifF) =>{
+    this.abstractProp = (abstractname, stockname, verrifF, debug) =>{
         /**@type {String} */
         let abstractnamest = abstractname+"";
         let stocknamest = stockname+"";
 
 //---блок обнаружения веррификации
-        var callstack = ((new Error()).stack+"").replace("Error", "CALLSTACK:");
+       // var callstack = ((new Error()).stack+"").replace("Error", "CALLSTACK:");
         var cb = verrifF instanceof Function;
-        var ud =  typeof verrifF == 'undefined'; // если функция феррификации не определена
-
+        //var ud =  typeof verrifF == 'undefined'; // если функция феррификации не определена 
+        //var ud = verrifF ? false : true;
+        var ud = !verrifF//true - если не определена, false - если определена        
         var _this = this;//контекст
 
         if (!cb){
             if (ud) {
-                //если функция феррификации не определена
-                console.info(`AbstractStock#abstractProp - 
-                функция феррификации не определена;
-                abstractname = ${abstractname},
-                stockname = ${stockname},
-                this = ${_this},
-                ${callstack}
-                `);
-
+                if(debug){
+                 console.info('\n---start debug massage---');
+                    //если функция феррификации не определена
+                    console.info(this.__proto__.constructor.name+'#abstractProp - \
+                    \n\tфункция феррификации не определена');
+                    console.info('\tabstractname = ', abstractname);
+                    console.info('\tstockname = ', stockname);
+                    console.info('\tthis = ', _this);
+                    console.trace();
+                 console.info('---end debug massage---\n')
+                }
+                
+                
             } else {
                 //если функция феррификации не является функцией  
-                throw new TypeError(`AbstractStock#abstractProp - 
-                в параметре verrifF передана не функция;
-                abstractname = ${abstractname},
-                stockname = ${stockname},
-                verrifF = ${verrifF},
-                this = ${_this}
-                `)
+                if (debug){
+                 console.error('\n--debug information--');
+                   console.error(this.__proto__.constructor.name='#abstractProp - \
+                   \n\tв параметре verrifF передана не функция');
+                   console.error('\tabstractname = ', abstractname, '\t---debug---');
+                   console.error('\tstockname = ', stockname, '\t---debug---');
+                   console.error('\tverrifF = ', verrifF, '\t---debug---');
+                   console.error('\tthis = ', _this, '\t---debug---');
+                }
+                throw (new TypeError('\tverrifF is not function'))
                 
             }
         }   
@@ -392,7 +424,7 @@ function AbstractStock(){
                          При определение абстрактного свойства, свойство в накопителе не найдено
                             ${abstractname}{
                                 stockname: ${stocknamest},
-                                status: ${stocknamest in AS_stock} }
+                                status: ${stocknamest in AS_stock} },
                                 ${((new Error()).stack+"").replace("Error", "CALLSTACK:")}
                             `
                         );
@@ -411,7 +443,7 @@ function AbstractStock(){
             _desc.get = () => {  //Аксессор get
                 _propstock = AS_stock[ASlist[_desc.val]];
                 /* */
-                let _ret = _propstoc instanceof Function ? _desc.retf : _propstock;
+                let _ret = _propstock instanceof Function ? _desc.retf : _propstock;
 
 //----------------веррификация--------------
             if (cb){//если функция веррификации передана
@@ -464,6 +496,75 @@ function AbstractStock(){
 //----Абстрактное свойство создано -----
     };
 
+
+  //-----Начало блока удаления абстрактного свойства------
+
+  /**
+   * 
+   * @param {String} abstractname имя абстрактного свойства
+   * @return {Boolean} **true** - абстрактное свойство успешно удалено. 
+   * **false** - во всех остальных случаях.
+   * @description удаляет абстрактное свойство
+   */
+    this.deleteAbstractProp = (abstractname)=>{
+        let abstractnamest = abstractname + "";
+        let ret = true; /** статус выхода */
+        
+        if (abstractnamest in ASlist){
+            delete ASlist[abstractnamest];
+            delete this[abstractnamest];
+        } else {
+            console.warn(this.__proto__.constructor.name='#deleteAbstractProp \
+             \n\tАбстрактное свойство с именем ' + abstractnamest +'\
+             \n\tне найдено в абстрактном накопителе');
+             console.warn('\t', this);
+             console.warn('\tкарта абстрактных свойств:');
+             console.warn('\t', ASlist);
+             console.trace();
+             ret = false;
+                }
+
+        return ret;
+
+    }
+  //-----Конец блока удаления абстрактного свойства------
+
+  //----------Начало блока удаления накопителя-------
+
+    /**
+     * 
+     * @param {String} pname имя накопителя
+     * @return {Boolean} **true** - накопитель успешно удалёно. 
+     * **false** - во всех остальных случаях.
+     * @description удаляет накопитель     
+     */
+    this.deleteStock = (pname)=>{
+        let pnamest = pname + "";
+        ret = true;
+
+        if(AS_stock === this[pnamest]){
+            let asmap = this.getASlist();
+
+            for (let asprop in asmap){
+                this.deleteAbstractProp(asprop);
+
+            };
+            ASlist = {};
+            AS_stock = {};            
+            delete this[pnamest];
+        } else {
+        console.warn(this.__proto__.constructor.name+'#deleteStock \
+        \n\tнакопитель с именем ' + pnamest + ' не найден');
+        console.warn('\tthis - ', this);
+        console.trace();
+        ret = false;
+            }
+
+        return ret;
+    };
+  //-----------Конец блока удаления накопителя-------
+
+
 //----end AbstractStock---
 }
 
@@ -471,16 +572,18 @@ module.exports.AbstractStock = AbstractStock;
 
 //export to window
 try {Object.assign(window, module.exports)}catch(e){ 
-console.groupCollapsed('%cW', 'color: red');
+console.groupCollapsed('%cnot defined on browser', 'color: red');
 console.error(e);
 console.groupEnd();}
 //end export to window   
-
+//
 ///**базовый объект типа массив 
 // * @type {Array}
 //*/
 //
-//let arr = [2];
+//let arr = [2,7];
+//
+////arr.t = 88;
 //
 ///**
 // * @class
@@ -503,8 +606,15 @@ console.groupEnd();}
 // *  TODO - тип для определённого абстрактного накопителя сделать
 // */
 //
-//
-//as.initStock('ars', arr);
+//var sf = (pdesc)=>{console.dir(pdesc); return pdesc.val};
+//var pf = (pdesc)=>{
+//    var _pdesc = pdesc;
+//    let asmap = pdesc.context.getASlist();
+//    _pdesc.realname = asmap[pdesc.name];
+//    console.dir(_pdesc);
+//    return pdesc.val;
+//};
+//as.initStock('ars', arr/*, sf*/);
 //
 ///**
 // * Абстрактное свойство
@@ -520,7 +630,8 @@ console.groupEnd();}
 // * 
 // *  TODO - тип для определённого абстрактного накопителя сделать
 // */
-//as.abstractProp('in', 'push');
+//as.abstractProp('in', 'push', undefined /*pf*/, true);
+////as.abstractProp('at', 't', (desc)=>{return desc.val+2});
 //
 ///**
 // * Абстрактное свойство
@@ -544,6 +655,7 @@ console.groupEnd();}
 // * 
 // */
 //as.in(7);
+//as.at = 77;
 //as.in(9);
 //console.dir(as.getASlist());
 //
@@ -562,6 +674,8 @@ console.groupEnd();}
 //
 //as.ars = arr1;
 //
+//console.log(as.deleteAbstractProp('in_'));
+//console.log(as.deleteStock('ars_'));
 //console.log(as.out());
 //console.log(as._out());
 //
