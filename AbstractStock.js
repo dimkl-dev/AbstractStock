@@ -1,17 +1,24 @@
+
+/**
+ * @module abstractstock
+ * @description При установке пакета из **git** источника - папка модуля будет иметь название **AbstractStock**
+ */
 /**
  * @function AbstractStock.prototype.validStock
- * @description проводит валидацию абстрактного накопителя. 
- * Возврощает объект. Свойство status==true 
- * озночает - что все привязки абстрактных свойств 
- * в абстрактном накопите коректны 
- * по отношению привязанного реального объекта
- * @param {AbstractStock#stockT} [pstock={@link AbstractStock#getStock}()] <readonly>  - внешний объект для валидации с абстрактным накопителем. 
- * По умолчанию используется привязанный объект. Смотри {@link AbstractStock#initStock}. 
+ * @memberof module:abstractstock
+ * @inner
+ * @description проводит валидацию абстрактного накопителя.
+ * Возврощает объект. Свойство status==true
+ * озночает - что все привязки абстрактных свойств
+ * в абстрактном накопите коректны
+ * в отношение привязанного реального объекта
+ * @param {AbstractStock#stockT} [pstock={@link AbstractStock#getStock}()] <readonly>  - внешний объект для валидации с абстрактным накопителем.
+ * По умолчанию используется привязанный объект. Смотри {@link AbstractStock#initStock}.
  * @throws Если параметр не передан, и функция вызвана до привязки объекта - будет сгенирирована ошибка.
  * @returns {AbstractStock#validStockT}
  */
 AbstractStock.prototype.validStock = function(pstock = this.getStock()){
-    //pstock - ссылка на реальный объект 
+    //pstock - ссылка на реальный объект
    // console.info('valid stock massage:', pstock);
     let status = true;
     /* общая схема выходного объекта
@@ -35,13 +42,13 @@ AbstractStock.prototype.validStock = function(pstock = this.getStock()){
     let props = ret.abstractProps; //ссылка на список валидируемых абстрактных свойств
     props[asprop] = {}; //сосздаём валидируемое абстрактное свойство. asprop - имя абстрактного свойства
     let _asprop = props[asprop]; // ссылка на валидируемое абстрактное свойство
-    _asprop.stockProp = listStock[asprop]; // имя свойства на которое указывает абстрактное свойство 
+    _asprop.stockProp = listStock[asprop]; // имя свойства на которое указывает абстрактное свойство
 
     //валидация абстрактного свойства
     if(listStock[asprop] in pstock){
         _asprop.statusProp = true;
     }else{
-        _asprop.statusProp = false;       
+        _asprop.statusProp = false;
         ret.status = false; //общий статус проверки
     };
 
@@ -51,39 +58,39 @@ AbstractStock.prototype.validStock = function(pstock = this.getStock()){
 };
 /**
  * @class AbstractStock
- *  Класс является фабрикой абстрактного класса который позволяет создовать  виртуальные методы и свойства. Это реализовано путём 
- * создания абстрактного накопителя(который нужно связать с реальным объектом) 
+ *  Класс является фабрикой абстрактного класса который позволяет создовать  виртуальные методы и свойства. Это реализовано путём
+ * создания абстрактного накопителя(который нужно связать с реальным объектом)
  * и абстрактных свойств (которые связываются реальными свойствам привязонного реального объекта)
- * Конструктор возвращает объекта типа AbstractStock. Для далнейше работы потребно вызвать 
+ * Конструктор возвращает объекта типа AbstractStock. Для далнейше работы потребно вызвать
  * метотод {@link AbstractStock#initStock}
  * для пояснения терминов и понятий смотри {@link ./README.md}*/
 function AbstractStock(){
 
 
 
-    /** 
+    /**
     * Внутренний накопитель определяется при вызове функции  {@link AbstractStock#initStock}
     * @type {Object}
     */
     var AS_stock = {};
-    
-    
+
+
 
     /**
      * Карта сопастовление абстрактных свойств экземпляра объекта {@link AbstractStock}
      * со свойствами объекта {@link AbstractStock~AS_stock}
      * @type {AbstractStock#ASMapT}
      */
-    var ASlist = {}; 
+    var ASlist = {};
     /**
     * Метод возращает привязанный объект к абстрактному накопителю
     * @name getStock
     * @instance
-    * @memberof AbstractStock
-    * @kind function    
-    */ 
+    * @memberof module:abstractstock~AbstractStock
+    * @kind function
+    */
     Object.defineProperty(this, 'getStock', {value: ()=>{
-  
+
         return AS_stock},
         writable: false,
     }
@@ -92,7 +99,7 @@ function AbstractStock(){
 /**Метод возращает копию карты абстрактных свойств
 * @name getASlist
 * @instance
-* @memberof AbstractStock
+* @memberof module:abstractstock~AbstractStock
 * @kind function
 * @returns {AbstractStock#ASMapT}
 */
@@ -108,14 +115,14 @@ function AbstractStock(){
 
 
     /**
-     * Инициализирует накопитель. Задаёт взаимосвязь между вертуальным и внешним объектом.
-     *  Привязанный объект стновится доступным как свойство экзампляра AbstractStock, 
+     * Инициализирует накопитель. Задаёт взаимосвязь между виртуальным и внешним объектом.
+     *  Привязанный объект стновится доступным как свойство экзампляра AbstractStock,
      * имя которого задаётся параметром pname.
-     * К одному экземпляру AbstractStock может быть привязан только один внешний объект. 
-     * Повторный вызов метода изменит ссылку накопителя всех переменных созданных ранее. 
+     * К одному экземпляру AbstractStock может быть привязан только один внешний объект.
+     * Повторный вызов метода изменит ссылку на накопителя и всех переменных созданных ранее.
      * Другими словами - повторный вызов создаст несколько переменных на один и тот же объект.
-     * 
-     * 
+     *
+     *
      * {@link initStock~pname}
      * @param {String} pname - имя накопителя
      * @param {Object} pstock -  накопитель
@@ -132,19 +139,19 @@ function AbstractStock(){
 
         AS_stock = pstock;
 
-//---блок обнаружения веррификации        
+//---блок обнаружения веррификации
         //var callstack = ((new Error()).stack+"").replace("Error", "CALLSTACK:");
         var cb = verrifF instanceof Function;
         //var ud =  typeof verrifF == 'undefined'; // если функция феррификации не определена
         //var ud = verrifF ? false : true;
-        var ud = !verrifF//true - если не определена, false - если определена        
+        var ud = !verrifF//true - если не определена, false - если определена
         var _this = this;
         //var debug = ((debug === undefined)||(debug === false)) ? false : true;
 
         if (!cb){
             if (ud) {
                 //если функция феррификации не определена
-                /*console.info(`${this.__proto__.constructor.name}#initStock - 
+                /*console.info(`${this.__proto__.constructor.name}#initStock -
                 функция феррификации не определена;
                 pname = ${pname},
                 pstock = ${pstock},
@@ -153,7 +160,7 @@ function AbstractStock(){
                 `);*/
 //-----Ooops-------
                 if (debug){
-                console.info('\n---start debug massage---'); 
+                console.info('\n---start debug massage---');
                     console.info(this.__proto__.constructor.name + '#initStock - \
                     \n\tфункция феррификации не определена');
                     console.info('\tpname = ', pname);
@@ -167,7 +174,7 @@ function AbstractStock(){
             } else {
               if(debug){
                console.error('\n--debug information--')
-                //если функция феррификации не является функцией  
+                //если функция феррификации не является функцией
                 console.error(this.__proto__.constructor.name +'#initStock - \
                 \n\tв параметре verrifF передана не функция');
                 console.error('\tpname = ', pname, '\t---debug--');
@@ -177,11 +184,11 @@ function AbstractStock(){
               }
                 throw (new TypeError('\tverrifF is not function'))
 
-     //----end else-----                
-                
+     //----end else-----
+
             }//end ud
         }//end cb
-//---конец блока обнаружения веррификации        
+//---конец блока обнаружения веррификации
 
 
         var _desc = {};
@@ -201,11 +208,11 @@ function AbstractStock(){
                 set: false
                 };
                 ret = verrifF(desc)};
-                
+
 
             return ret;
-//-----end get--------        
-        }; 
+//-----end get--------
+        };
         _desc.set = (pval) => {
             // TODO сделать валидацию pstock
             let stock = pval;
@@ -222,13 +229,13 @@ function AbstractStock(){
                       set: true
                       };
                       stock = verrifF(desc)};
-      
+
 
             let stockValidRes = this.validStock(stock);
 
             if(stockValidRes.status){
                 AS_stock = stock;}else{
-                    
+
                     let sterr = `AbstractStock: ERROR!!!
                     Error to redefine 'Stock'`;
 
@@ -239,13 +246,13 @@ function AbstractStock(){
                     err.stockValidRes = stockValidRes;
                     throw err;
 
-                    
+
                 }
-            
+
 
         };
 
-        Object.defineProperty(this, pname, _desc); 
+        Object.defineProperty(this, pname, _desc);
 
 //----------Конец определение накопителя---------
 
@@ -253,36 +260,36 @@ function AbstractStock(){
 
 //--Определение типов данных---
     /**
-     * Абстрактное свойство класса 
-     * @typedef {Any} AbstractStock#abstractPropT
+     * Абстрактное свойство класса
+     * @typedef {Any} module:abstractstock~AbstractStock#abstractPropT
      * @prop {String} real_prop - имя реального свойства
      * @description служебный тип данных потребный для хранения информации об обстрактных свойствах.
-     * Абстрактное свойство определяется {@link AbstractStock#abstractProp}
-     * Параметры типа являются информационными, и не имют отображения в коде. Не имеют связи с данными и 
-     * нужны только для напоминания того - что нужно задокументировать в коментарии jsdoc.  
+     * Абстрактное свойство определяется {@link module:abstractstock~AbstractStock#abstractProp}
+     * Параметры типа являются информационными, и не имют отображения в коде. Не имеют связи с данными и
+     * нужны только для напоминания того - что нужно задокументировать в коментарии jsdoc.
      */
 
     /**
      * Абстракный накопитель класса
-     * @typedef {Object} AbstractStock#abstractStockT
+     * @typedef {Object} module:abstractstock~AbstractStock#abstractStockT
      * @prop {Object} real_Stock - ссылка на реальнsq объект
-     * @description служебный тип данных потребный для хранения информации об обстрактном накопителе. 
-     * Детали и создание обстрактного накопителя смотри в описание метода  {@link AbstractStock#initStock}
-     * Параметры типа являются информационными, и не имют отображения в коде. Не имеют связи с данными и 
-     * нужны только для напоминания того - что нужно задокументировать в коментарии jsdoc.     
+     * @description служебный тип данных потребный для хранения информации об обстрактном накопителе.
+     * Детали и создание обстрактного накопителя смотри в описание метода  {@link module:abstractstock~AbstractStock#initStock}
+     * Параметры типа являются информационными, и не имют отображения в коде. Не имеют связи с данными и
+     * нужны только для напоминания того - что нужно задокументировать в коментарии jsdoc.
      */
 
     /**
      * Реальный накопитель класса
-     * @typedef {Object} AbstractStock#stockT
-     * @description объект привязанный к экземляру объекта {@link AbstractStock} 
-     * при помощи метода [initStock]{@link AbstractStock#initStock}
-     * 
-     * 
+     * @typedef {Object} module:abstractstock~AbstractStock#stockT
+     * @description объект привязанный к экземляру объекта {@link module:abstractstock~AbstractStock}
+     * при помощи метода [initStock]{@link module:abstractstock~AbstractStock#initStock}
+     *
+     *
      */
-    
+
     /**
-     * @typedef {Object} AbstractStock#ASMapT
+     * @typedef {Object} module:abstractstock~AbstractStock#ASMapT
      * Объект представляющицй собой асоциативный список. Соотносящий абстрактные свойства, со свойствами внешнего объекта.
      * Сам список имеет следующий вид <br>
      * <pre><code>
@@ -292,23 +299,23 @@ function AbstractStock(){
      *      ....
      *  }
      * </code></pre>
-     * 
+     *
      * где: <br>
      * <pre>
-     *    <b>abstractProp</b>(string) - имя абстрактного свойства 
+     *    <b>abstractProp</b>(string) - имя абстрактного свойства
      *    <b>stockProp</b>(string) - имя свойства у внешнего объекта
      * </pre>
      */
 
     /**
-     * @typedef AbstractStock.prototype.validStockT
+     * @typedef module:abstractstock~AbstractStock.prototype.validStockT
      * @description Тип данных предстовляющих результат валидации абстрактного накопителя
-     * 
-     * @prop {boolean} status=общий статус валидации всех привязок абстрактных свойств. 
+     *
+     * @prop {boolean} status=общий статус валидации всех привязок абстрактных свойств.
      * Значение false указывает на то что в одном или более абстрактном свойстве привязка не коректна.
      * @prop {Object} abstractProps - объект валидации абстрактных свойств
-     * @prop {Object} abstractProps.abstractProp - валидация абстрактного свойства. Именем свойства являются имена абстрактных свойств. см {@link AbstractStock#abstractProp}
-     * @prop {string} abstractProps.abstractProp.stockProp - свойство в накопителе на которое ссылается абстрактное свойство см {@link AbstractStock#abstractProp}
+     * @prop {Object} abstractProps.abstractProp - валидация абстрактного свойства. Именем свойства являются имена абстрактных свойств. см {@link module:abstractstock~AbstractStock#abstractProp}
+     * @prop {string} abstractProps.abstractProp.stockProp - свойство в накопителе на которое ссылается абстрактное свойство см {@link module:abstractstock~AbstractStock#abstractProp}
      * @prop {boolean} abstractProps.abstractProp.statusProp - статус валидации абстрактного свойства
      */
 
@@ -318,20 +325,20 @@ function AbstractStock(){
 //--Определение callback функций
 
 /**
- * функции проверяющие и модифицируещие значение абстрактных свойств или объекта привязанного
+ * функция проверяющие и модифицируещие значение абстрактных свойств или объекта привязанного
  *  к абстрактному накопителю. Функции данного типа должны возврощать результат.
- * @callback AbstractStock#verrifFunc
+ * @callback module:abstractstock~AbstractStock#verrifFunc
  * @param {Object} desc - дескриптор значения свойства
  * @param {String} desc.name - имя свойства
  * @param {any} desc.val - значение свойства
  * @param {Object} desc.context - контекст свойства
- * @param {true|false} desc.stock - **true**  если свойство является накопителем. **false** - во всех 
+ * @param {true|false} desc.stock - **true**  если свойство является накопителем. **false** - во всех
  * остальных случаях
- * @param {true|false} desc.prop - **true** если свойста является абстрактным. **false** - во всех 
+ * @param {true|false} desc.prop - **true** если свойста является абстрактным. **false** - во всех
  * остальных случаях
- * @param {true|false} desc.get - **true** если значение возврощается свойством. **false** - во всех 
+ * @param {true|false} desc.get - **true** если значение возврощается свойством. **false** - во всех
  * остальных случаях
- * @param {true|false} desc.set - **true** если значение записывается свойством. **false** - во всех 
+ * @param {true|false} desc.set - **true** если значение записывается свойством. **false** - во всех
  * остальных случаях
   * @returns {any} значене после всех операций
  */
@@ -339,10 +346,10 @@ function AbstractStock(){
 //--Конец определения callback функций
 
 /**
- * Определяет абстрактное свойство. 
+ * Определяет абстрактное свойство.
  * @param {String} abstractname - имя абстрактного свойтсва
  * @param {String} stockname - имя фактического свойства
- * @param {AbstractStock#verrifFunc} [verrifF] - функция обратного вызова для
+ * @param {module:abstractstock~AbstractStock#verrifFunc} [verrifF] - функция обратного вызова для
  * @param {Boolean} [debug] - **true** - будут вывводится отладочные сообщения
  * проврки и изменения значения
  */
@@ -354,9 +361,9 @@ function AbstractStock(){
 //---блок обнаружения веррификации
        // var callstack = ((new Error()).stack+"").replace("Error", "CALLSTACK:");
         var cb = verrifF instanceof Function;
-        //var ud =  typeof verrifF == 'undefined'; // если функция феррификации не определена 
+        //var ud =  typeof verrifF == 'undefined'; // если функция феррификации не определена
         //var ud = verrifF ? false : true;
-        var ud = !verrifF//true - если не определена, false - если определена        
+        var ud = !verrifF//true - если не определена, false - если определена
         var _this = this;//контекст
 
         if (!cb){
@@ -372,10 +379,10 @@ function AbstractStock(){
                     console.trace();
                  console.info('---end debug massage---\n')
                 }
-                
-                
+
+
             } else {
-                //если функция феррификации не является функцией  
+                //если функция феррификации не является функцией
                 if (debug){
                  console.error('\n--debug information--');
                    console.error(this.__proto__.constructor.name='#abstractProp - \
@@ -386,15 +393,15 @@ function AbstractStock(){
                    console.error('\tthis = ', _this, '\t---debug---');
                 }
                 throw (new TypeError('\tverrifF is not function'))
-                
+
             }
-        }   
-//---конец блока обнаружения веррификации             
-        
+        }
+//---конец блока обнаружения веррификации
+
 //----block console.warn-----
         //Ищем в карте абстрактное свойство
         if (abstractnamest in ASlist) {
-    /*если абстрактное свойство существует, и происходит изменение привязки 
+    /*если абстрактное свойство существует, и происходит изменение привязки
     абстрактного свойства к свойству внешнего объекта  */
             console.warn(
                 `AbstractStock WARN:
@@ -417,7 +424,7 @@ function AbstractStock(){
         } else {
 
                 if ((stocknamest in AS_stock)==false){
-        /*Определяется новое абстрактное свойство, 
+        /*Определяется новое абстрактное свойство,
         но в накопителе свойство не найдено */
                     console.warn(
                         `AbstractStock WARN:
@@ -433,11 +440,11 @@ function AbstractStock(){
 
 //----Создаём абстрактное свойство-----
 
-//Так как аксесоры постоянно доступны - то они порождают замыкани.    
+//Так как аксесоры постоянно доступны - то они порождают замыкани.
             var _desc = {}; //дескриптор динамичски-определяемого свойства.
             _desc.configurable=true
             _desc.enumerable=true
-            _desc.retf = (...args)=>{return AS_stock[ASlist[_desc.val]](...args) };/*новодел. Эмулирует вызов метода реального объекта. 
+            _desc.retf = (...args)=>{return AS_stock[ASlist[_desc.val]](...args) };/*новодел. Эмулирует вызов метода реального объекта.
             Обёртка для вызыва функций в контесте реального объекта */
             _desc.val = abstractnamest; //
             _desc.get = () => {  //Аксессор get
@@ -478,13 +485,13 @@ function AbstractStock(){
                       set: true
                       };
                       retval = verrifF(desc)};
-//------------конец веррификации------------                
+//------------конец веррификации------------
 
                 AS_stock[ASlist[_desc.val]] = retval;
             };//конец set
             /*Устанавливаем соответсвие между абстрактным и фактическим свойстве
             /* путём записи свойства ASlist*/
-            
+
 
             Object.defineProperty(this, abstractnamest, _desc);
 
@@ -500,16 +507,16 @@ function AbstractStock(){
   //-----Начало блока удаления абстрактного свойства------
 
   /**
-   * 
+   *
    * @param {String} abstractname имя абстрактного свойства
-   * @return {Boolean} **true** - абстрактное свойство успешно удалено. 
+   * @return {Boolean} **true** - абстрактное свойство успешно удалено.
    * **false** - во всех остальных случаях.
    * @description удаляет абстрактное свойство
    */
     this.deleteAbstractProp = (abstractname)=>{
         let abstractnamest = abstractname + "";
         let ret = true; /** статус выхода */
-        
+
         if (abstractnamest in ASlist){
             delete ASlist[abstractnamest];
             delete this[abstractnamest];
@@ -532,11 +539,11 @@ function AbstractStock(){
   //----------Начало блока удаления накопителя-------
 
     /**
-     * 
+     *
      * @param {String} pname имя накопителя
-     * @return {Boolean} **true** - накопитель успешно удалёно. 
+     * @return {Boolean} **true** - накопитель успешно удалён.
      * **false** - во всех остальных случаях.
-     * @description удаляет накопитель     
+     * @description удаляет накопитель
      */
     this.deleteStock = (pname)=>{
         let pnamest = pname + "";
@@ -550,7 +557,7 @@ function AbstractStock(){
 
             };
             ASlist = {};
-            AS_stock = {};            
+            AS_stock = {};
             delete this[pnamest];
         } else {
         console.warn(this.__proto__.constructor.name+'#deleteStock \
@@ -568,16 +575,17 @@ function AbstractStock(){
 //----end AbstractStock---
 }
 
+/**экспортирование класса через эту переменную */
 module.exports.AbstractStock = AbstractStock;
 
 //export to window
-try {Object.assign(window, module.exports)}catch(e){ 
+try {Object.assign(window, module.exports)}catch(e){
 console.groupCollapsed('%cnot defined on browser', 'color: red');
 console.error(e);
 console.groupEnd();}
-//end export to window   
+//end export to window
 //
-///**базовый объект типа массив 
+///**базовый объект типа массив
 // * @type {Array}
 //*/
 //
@@ -588,7 +596,7 @@ console.groupEnd();}
 ///**
 // * @class
 // * @extends {AbstractStock}
-// * 
+// *
 // */
 //let as = new AbstractStock();
 ///**
@@ -596,13 +604,13 @@ console.groupEnd();}
 // * @name ars
 // * @instance as
 // * @memberof as
-// * 
+// *
 // * @type {as#abstractStockT}
 // * @prop {Array} real_Stock - {@link arr}
-// * 
+// *
 //  * @borrows as.arr as arr
 //
-// * 
+// *
 // *  TODO - тип для определённого абстрактного накопителя сделать
 // */
 //
@@ -621,13 +629,13 @@ console.groupEnd();}
 // * @name in
 // * @instance as
 // * @memberof as
-// * 
+// *
 // * @type {as#abstractPropT}
 // * @prop {Function} real_prop - push
-// * 
+// *
 //  * @borrows as.arr as arr
 //
-// * 
+// *
 // *  TODO - тип для определённого абстрактного накопителя сделать
 // */
 //as.abstractProp('in', 'push', undefined /*pf*/, true);
@@ -638,21 +646,21 @@ console.groupEnd();}
 // * @name out
 // * @instance as
 // * @memberof as
-// * 
+// *
 // * @type {as#abstractPropT}
 // * @prop {Function} real_prop - shift
-// * 
+// *
 //  * @borrows as.arr as arr
 //
-// * 
+// *
 // *  TODO - тип для определённого абстрактного накопителя сделать
 // */
 //as.abstractProp('out', 'shift');
-////as.in(2); 
+////as.in(2);
 //
 ///**
 // * @prop {AbstractStock.abstractProp} as.in - fff
-// * 
+// *
 // */
 //as.in(7);
 //as.at = 77;
@@ -680,7 +688,7 @@ console.groupEnd();}
 //console.log(as._out());
 //
 ///**переменная типа абстрактного свойства
-// * @type {as#abstractPropT} 
+// * @type {as#abstractPropT}
 // * @prop {as#abstractPropT} res - имя переменной
 //*/
 //var zzzzz;
